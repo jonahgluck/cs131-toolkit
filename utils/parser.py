@@ -1,13 +1,13 @@
 import os
-from typing import List
+from typing import List, Dict, Optional
 
 
 class parser():
     '''takes a file and creates tokens for tree'''
-    def __init__(self, file, token_list: List = []):
+    def __init__(self, file, token_vocab: Optional[Dict[str, str]] = None):
         self.file = file
         self.data = []
-        self.token_list = {
+        self.token_vocab = {
             'xor': 'XOR',
             'or': 'OR',
             'and': 'AND',
@@ -26,21 +26,7 @@ class parser():
         }
 
         self.parse()
-        self.tokenize(token_list)
-
-    def parenthesis_validator(self, data):
-        '''validate parenthesis'''
-        open_parenthesis = 0
-        close_parenthesis = 0
-
-        for char in data:
-            if char == '(':
-                open_parenthesis += 1
-            elif char == ')':
-                close_parenthesis += 1
-
-        if open_parenthesis != close_parenthesis:
-            raise Exception('Parenthesis mismatch in file: ' + self.file + ' at line: ' + str(self.get_length()) + '\n' + data)
+        self.lexical_analysis(token_vocab)
 
     def parse(self):
         '''gather data to tokenize operators'''
@@ -60,8 +46,8 @@ class parser():
         '''return length of data'''
         return len(self.data)
 
-    def tokenize(self, token_list):
-        if token_list == []:
+    def lexical_analysis(self, token_list):
+        if token_list is None:
             token_list = self.token_list
 
         for i in range(self.get_length()):
@@ -77,5 +63,5 @@ if __name__ == '__main__':
     os.chdir('..')
 
     # testing file is called: sample.txt
-    p = parser('tests/sample.txt')
+    p = parser('tests/sample.txt', {'+': 'OR', '*': 'AND'})
     print(p)
