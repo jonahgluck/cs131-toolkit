@@ -1,6 +1,10 @@
+import os
+from typing import List
+
+
 class parser():
     '''takes a file and creates tokens for tree'''
-    def __init__(self, file, token_list: list):
+    def __init__(self, file, token_list: List = []):
         self.file = file
         self.data = []
         self.token_list = {
@@ -18,10 +22,25 @@ class parser():
             '+': 'OR',
             '*': 'AND',
             '~': 'NOT',
+            '\\\\': 'NEWLINE',
         }
 
         self.parse()
         self.tokenize(token_list)
+
+    def parenthesis_validator(self, data):
+        '''validate parenthesis'''
+        open_parenthesis = 0
+        close_parenthesis = 0
+
+        for char in data:
+            if char == '(':
+                open_parenthesis += 1
+            elif char == ')':
+                close_parenthesis += 1
+
+        if open_parenthesis != close_parenthesis:
+            raise Exception('Parenthesis mismatch in file: ' + self.file + ' at line: ' + str(self.get_length()) + '\n' + data)
 
     def parse(self):
         '''gather data to tokenize operators'''
@@ -52,8 +71,11 @@ class parser():
     def __str__(self):
         return str(self.data)
 
+
 if __name__ == '__main__':
-    # TODO
-    #p = parser('test.txt', [])
-    #print(p)
-    pass
+    '''test parser'''
+    os.chdir('..')
+
+    # testing file is called: sample.txt
+    p = parser('tests/sample.txt')
+    print(p)
